@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baccarat Dashboard</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Segoe UI;
+background:linear-gradient(180deg,#2b0140,#160020);
+color:white;
+}
+
+.container{
+width:1200px;
+margin:auto;
+padding:20px;
+display:none;
+}
+
+.card{
+background:linear-gradient(180deg,#4b1b68,#2a0d3d);
+border-radius:15px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 0 20px rgba(255,0,200,.2);
+}
+
+.header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:15px;
+}
+
+.title{
+font-size:26px;
+font-weight:bold;
+}
+
+/* ROADMAP */
+
+.roadmap{
+display:grid;
+grid-template-columns:repeat(14,40px);
+gap:6px;
+justify-content:center;
+padding:20px;
+background:linear-gradient(180deg,#5c2d87,#2e2c8a);
+border-radius:12px;
+overflow-x:auto;
+}
+
+.cell{
+width:40px;
+height:40px;
+border-radius:8px;
+background:#eee;
+}
+
+.banker{background:#ff2e2e;}
+.player{background:#2e6cff;}
+.tie{background:#17c200;}
+
+/* BUTTONS */
+
+.controls{
+display:flex;
+gap:10px;
+justify-content:center;
+margin-top:15px;
+}
+
+button{
+border:none;
+padding:12px 18px;
+border-radius:8px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.btnB{background:#ff2e2e;color:white;}
+.btnP{background:#2e6cff;color:white;}
+.btnT{background:#00b300;color:white;}
+.btnUndo{background:#ff9800;color:white;}
+.btnClear{background:#444;color:white;}
+
+.row{
+display:flex;
+gap:20px;
+}
+
+.panel{
+flex:1;
+}
+
+/* TABLE */
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:10px;
+text-align:center;
+}
+
+th{
+border-bottom:2px solid #ff3bd4;
+}
+
+/* STATS */
+
+.statbox{
+display:flex;
+justify-content:space-around;
+margin-bottom:20px;
+}
+
+.circle{
+width:50px;
+height:50px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+}
+
+.b{background:red;}
+.p{background:blue;}
+.t{background:green;}
+
+.bar{
+height:12px;
+background:#ccc;
+border-radius:10px;
+overflow:hidden;
+margin-bottom:10px;
+}
+
+.fill{
+height:100%;
+}
+
+.fill.b{background:red;}
+.fill.p{background:#2e6cff;}
+.fill.t{background:green;}
+
+#lineA,#lineB,#lineC{
+padding:8px;
+font-size:18px;
+margin:4px 0;
+}
+
+.signalP{color:#0066ff}
+.signalB{color:#ff0000}
+.wait{color:#aaa}
+
+.historyRow{
+display:flex;
+align-items:center;
+margin:6px 0;
+gap:10px;
+}
+
+.history{
+display:flex;
+gap:4px;
+overflow-x:auto;
+white-space:nowrap;
+max-width:900px;
+}
+
+.histBox{
+width:18px;
+height:18px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:12px;
+border-radius:4px;
+background:#333;
+}
+ 
+.win{
+background:#00c853;
+}
+
+.lose{
+background:#ff1744;
+}
+
+.blinkHigh{
+animation:blinkHigh 0.8s infinite alternate;
+font-weight:bold;
+color:#00ff9c;
+}
+
+@keyframes blinkHigh{
+0%{opacity:1}
+100%{opacity:0.3}
+}
+
+.loginPage{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:linear-gradient(180deg,#2b0140,#160020);
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.loginBox{
+background:linear-gradient(180deg,#4b1b68,#2a0d3d);
+padding:40px;
+border-radius:15px;
+width:320px;
+text-align:center;
+box-shadow:0 0 25px rgba(255,0,200,.3);
+}
+
+.loginBox h2{
+margin-bottom:20px;
+}
+
+.loginBox input{
+width:100%;
+padding:10px;
+margin:8px 0;
+border:none;
+border-radius:6px;
+}
+
+.loginBtn{
+width:100%;
+padding:10px;
+background:#ff2e9f;
+color:white;
+font-weight:bold;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+.eye{
+position:absolute;
+right:10px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+}
+
+.passWrap{
+position:relative;
+}
+
+.expire{
+margin-top:10px;
+font-size:14px;
+color:#ffb3ff;
+}
+
+#lineA,#lineB,#lineC,#lineD,#lineE,#lineF{
+padding:8px;
+font-size:18px;
+margin:4px 0;
+}
+
+#lineL1,#lineL2,#lineL3,#lineL4,#lineL5,
+#lineL6,#lineL7,#lineL8,#lineL9,#lineL10,
+#lineL11,#lineL12,#lineL13,#lineL14,#lineL15{
+ padding:8px;
+ font-size:16px;
+ margin:3px 0;
+}
+
+#aiBox{
+text-align:center;
+padding:20px;
+}
+
+#finalBet{
+font-size:30px;
+font-weight:bold;
+}
+
+#confidence{
+font-size:18px;
+margin-top:6px;
+opacity:0.9;
+}
+
+#aiSmartBox{
+margin-top:15px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(90px,1fr));
+gap:8px;
+}
+
+.smartItem{
+background:linear-gradient(180deg,#1a1a2e,#0f0f1a);
+border-radius:10px;
+padding:6px;
+font-size:12px;
+text-align:center;
+border:1px solid rgba(255,255,255,0.1);
+}
+
+.smartWin{border:1px solid #00ff9c;}
+.smartLose{border:1px solid #ff2e2e;}
+
+.smartB{color:#ff2e2e;font-weight:bold;}
+.smartP{color:#2e6cff;font-weight:bold;}
+
+.smartConf{
+font-size:11px;
+opacity:0.8;
+}
+
+.smartRes{
+font-size:11px;
+margin-top:2px;
+}
+
+#aiUltraBox{
+margin-top:12px;
+padding:12px;
+border-radius:12px;
+background:linear-gradient(180deg,#1a1a2e,#0f0f1a);
+border:1px solid rgba(255,255,255,0.1);
+text-align:center;
+}
+
+#aiUltraHistory{
+margin-top:10px;
+display:grid;
+grid-template-columns:repeat(10, 1fr); /* 🔥 10 ช่องต่อแถว */
+gap:6px;
+}
+
+.ultraItem{
+height:28px;
+display:flex;
+align-items:center;
+justify-content:center;
+border-radius:6px;
+font-size:14px;
+font-weight:bold;
+}
+
+.ultraWin{background:#00c853;}
+.ultraLose{background:#ff1744;}
+
+.reason{
+font-size:12px;
+margin-top:6px;
+opacity:0.85;
+line-height:1.4;
+}
+
+
+.ultraWin{background:#00c853;}
+.ultraLose{background:#ff1744;}
+
+.ultraItem:hover{
+transform:scale(1.2);
+}
+
+</style>
+</head>
+
+<body>
+
+    <div class="loginPage" id="loginPage">
+
+<div class="loginBox">
+
+<h2>Baccarat Login</h2>
+
+<input id="user" placeholder="Username">
+
+<div class="passWrap">
+<input id="pass" type="password" placeholder="Password">
+<span class="eye" onclick="togglePass()">👁</span>
+</div>
+
+<button class="loginBtn" onclick="login()">LOGIN</button>
+
+
+</div>
+</div>
+
+<div class="container">
+
+<!-- ROADMAP -->
+
+<div class="card">
+<div class="header">
+
+<div class="title">
+Baccarat Killer V.Ai 7 ชั้น
+<div id="expireText" style="font-size:14px;">
+วันหมดอายุ : 23 มีนาคม พ.ศ. 2569
+</div>
+</div>
+
+<div>
+ผลล่าสุด: <span id="lastResult">-</span>
+</div>
+
+</div>
+
+<div class="roadmap" id="roadmap"></div>
+
+<div class="controls">
+
+<button class="btnP" onclick="addResult('P')">PLAYER</button>
+<button class="btnB" onclick="addResult('B')">BANKER</button>
+<button class="btnT" onclick="addResult('T')">TIE</button>
+
+<button class="btnUndo" onclick="undo()">UNDO</button>
+<button class="btnClear" onclick="clearBoard()">CLEAR</button>
+
+</div>
+
+</div>
+
+<!-- STATS -->
+
+<div class="row">
+
+<div class="card panel">
+
+<h2>สถิติ</h2>
+
+<div class="statbox">
+
+<div class="circle b">B <span id="countB">0</span></div>
+<div class="circle p">P <span id="countP">0</span></div>
+<div class="circle t">T <span id="countT">0</span></div>
+
+</div>
+
+<!-- AI HISTORY -->
+
+<div class="historyRow">
+<div id="labelA"></div>
+<div id="histA" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelB"></div>
+<div id="histB" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelC"></div>
+<div id="histC" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelD"></div>
+<div id="histD" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelE"></div>
+<div id="histE" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelF"></div>
+<div id="histF" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelL1"></div>
+<div id="histL1" class="history"></div>
+</div>
+
+<div class="historyRow">
+<div id="labelL2"></div>
+<div id="histL2" class="history"></div>
+</div>
+
+<div class="historyRow"><div id="labelL3"></div><div id="histL3" class="history"></div></div>
+<div class="historyRow"><div id="labelL4"></div><div id="histL4" class="history"></div></div>
+<div class="historyRow"><div id="labelL5"></div><div id="histL5" class="history"></div></div>
+<div class="historyRow"><div id="labelL6"></div><div id="histL6" class="history"></div></div>
+<div class="historyRow"><div id="labelL7"></div><div id="histL7" class="history"></div></div>
+<div class="historyRow"><div id="labelL8"></div><div id="histL8" class="history"></div></div>
+<div class="historyRow"><div id="labelL9"></div><div id="histL9" class="history"></div></div>
+<div class="historyRow"><div id="labelL10"></div><div id="histL10" class="history"></div></div>
+<div class="historyRow"><div id="labelL11"></div><div id="histL11" class="history"></div></div>
+<div class="historyRow"><div id="labelL12"></div><div id="histL12" class="history"></div></div>
+<div class="historyRow"><div id="labelL13"></div><div id="histL13" class="history"></div></div>
+<div class="historyRow"><div id="labelL14"></div><div id="histL14" class="history"></div></div>
+<div class="historyRow"><div id="labelL15"></div><div id="histL15" class="history"></div></div>
+
+</div> <!-- ปิด card panel -->
+
+
+<div id="aiBox">
+
+<div id="finalBet" style="font-size:22px;font-weight:bold;">
+🔥 แทง: -
+</div>
+
+<div id="confidence">
+Confidence 0%
+</div>
+
+<!-- 🔥 AI 7 ชั้น -->
+<div id="aiUltraBox"></div>
+
+<!-- 🔥 แถวผล ✔✖ -->
+<div id="aiUltraHistory"></div>
+
+</div>
+
+</div>
+
+
+
+</div> <!-- ปิด row -->
+
+<script>
+
+const roadmap = document.getElementById("roadmap")
+
+const cols = 14
+const rows = 6
+
+const cells = []
+const results = []
+const aiStats = {
+
+A:{win:0,lose:0,total:0,last:null},
+B:{win:0,lose:0,total:0,last:null},
+C:{win:0,lose:0,total:0,last:null},
+D:{win:0,lose:0,total:0,last:null},
+E:{win:0,lose:0,total:0,last:null},
+F:{win:0,lose:0,total:0,last:null},
+
+L1:{win:0,lose:0,total:0,last:null},
+L2:{win:0,lose:0,total:0,last:null},
+L3:{win:0,lose:0,total:0,last:null},
+L4:{win:0,lose:0,total:0,last:null},
+L5:{win:0,lose:0,total:0,last:null},
+L6:{win:0,lose:0,total:0,last:null},
+L7:{win:0,lose:0,total:0,last:null},
+L8:{win:0,lose:0,total:0,last:null},
+L9:{win:0,lose:0,total:0,last:null},
+L10:{win:0,lose:0,total:0,last:null},
+L11:{win:0,lose:0,total:0,last:null},
+L12:{win:0,lose:0,total:0,last:null},
+L13:{win:0,lose:0,total:0,last:null},
+L14:{win:0,lose:0,total:0,last:null},
+L15:{win:0,lose:0,total:0,last:null}
+
+}
+
+const aiHistory = {
+A:[],B:[],C:[],D:[],E:[],F:[],
+L1:[],L2:[],L3:[],L4:[],L5:[],
+L6:[],L7:[],L8:[],L9:[],L10:[],
+L11:[],L12:[],L13:[],L14:[],L15:[]
+}
+const aiUltraHistory = [] // ✅ เพิ่มตรงนี้
+
+let currentRow = 0
+let currentCol = 0
+let isReplay = false; // ✅ วางตรงนี้
+let lastUltraBet = null; // ✅ เพิ่มบรรทัดนี้
+let ultraStats = {
+  win: 0,
+  lose: 0
+}
+
+
+
+
+/* สร้าง grid */
+
+for(let r=0;r<rows;r++){
+
+ for(let c=0;c<cols;c++){
+
+  const cell = document.createElement("div")
+  cell.className="cell"
+
+  roadmap.appendChild(cell)
+
+  cells.push(cell)
+
+ }
+
+}
+
+function getUltraPrediction(){
+
+let lines = Object.keys(aiStats)
+
+let ranked = lines.map(l=>{
+ let s = aiStats[l]
+ let acc = s.total ? s.win/s.total : 0
+ return {line:l, acc}
+})
+
+ranked.sort((a,b)=>b.acc-a.acc)
+let top15 = ranked.slice(0,15)
+
+let scoreB = 0
+let scoreP = 0
+
+top15.forEach((item,i)=>{
+
+ let stat = aiStats[item.line]
+ let pred = stat.last
+ if(!pred) return
+
+ let weight = 1
+
+ if(i < 3) weight = 3
+ else if(i < 7) weight = 2
+
+ if(stat.total > 10) weight++
+ if(stat.total && stat.win/stat.total >= 0.6) weight++
+
+ if(pred=="B") scoreB += weight
+ if(pred=="P") scoreP += weight
+
+})
+
+if(scoreB === 0 && scoreP === 0) return null
+
+return scoreB > scoreP ? "B" : "P"
+}
+function addResult(type){
+
+if(results.length >= cols*rows) return
+
+// ✅ 1. เก็บค่าก่อนแทง (เหมือน AI7)
+let prevFinal = lastUltraBet
+
+// ✅ 2. ใส่ผลจริง
+results.push(type)
+
+// ✅ 3. เช็ค AI ปกติ
+checkAIPredict(type)
+
+// ✅ 4. คำนวณ AI ใหม่ (จะ set lastUltraBet ใหม่)
+analyzeAI()
+
+// ✅ 5. ตัดสินผล (ใช้ "ค่าก่อนแทงเท่านั้น")
+if(type !== "T" && prevFinal){
+
+  let isWin = prevFinal === type
+
+  // ✅ เก็บสถิติจริง
+  if(isWin) ultraStats.win++
+  else ultraStats.lose++
+
+  // ✅ push history
+  aiUltraHistory.push(isWin ? 1 : 0)
+}
+
+// render
+drawBead()
+updateStats()
+renderHistory()
+renderUltraAI()
+
+document.getElementById("lastResult").textContent = type
+}
+
+/* =========================
+PROGRAM EXPIRE SYSTEM
+========================= */
+
+const EXPIRE_DATE = new Date("2026-05-23T23:59:59")
+
+function checkExpire(){
+
+const now = new Date()
+
+if(now > EXPIRE_DATE){
+
+document.body.innerHTML = `
+<div style="
+display:flex;
+align-items:center;
+justify-content:center;
+height:100vh;
+background:#160020;
+color:white;
+font-family:Segoe UI;
+flex-direction:column;
+">
+
+<h1 style="color:#ff2e9f">PROGRAM EXPIRED</h1>
+
+<p>โปรแกรมหมดอายุแล้ว</p>
+
+<p>กรุณาติดต่อผู้พัฒนา</p>
+
+</div>
+`
+
+}
+
+}
+
+checkExpire()
+
+/* วาด Bead Road */
+
+function drawBead(){
+
+ cells.forEach(c=>c.className="cell");
+
+ currentRow=0;
+ currentCol=0;
+
+ results.forEach(r=>{
+
+  const index=currentRow*cols+currentCol;
+
+  if(!cells[index]) return;
+
+  if(r==="B") cells[index].classList.add("banker");
+  if(r==="P") cells[index].classList.add("player");
+  if(r==="T") cells[index].classList.add("tie");
+
+  currentRow++;
+
+  if(currentRow>=rows){
+   currentRow=0;
+   currentCol++;
+  }
+
+ });
+
+ roadmap.scrollLeft=roadmap.scrollWidth;
+
+}
+/* เพิ่มฟังก์ชันนี้ */
+
+function updateStats(){
+
+let B = results.filter(r=>r==="B").length
+let P = results.filter(r=>r==="P").length
+let T = results.filter(r=>r==="T").length
+
+document.getElementById("countB").textContent = B
+document.getElementById("countP").textContent = P
+document.getElementById("countT").textContent = T
+
+}
+
+
+/* CLEAR */
+function clearBoard(){
+
+ results.length = 0;
+ aiUltraHistory.length = 0;
+ ultraStats.win = 0
+ ultraStats.lose = 0
+
+ currentRow = 0;
+ currentCol = 0;
+
+ // reset AI
+[
+"A","B","C","D","E","F",
+"L1","L2","L3","L4","L5","L6","L7","L8","L9","L10",
+"L11","L12","L13","L14","L15"
+].forEach(line=>{
+ aiStats[line]={win:0,lose:0,total:0,last:null};
+ aiHistory[line]=[];
+});
+
+ cells.forEach(c=>{
+  c.className="cell";
+ });
+
+ updateStats();
+ renderHistory();
+
+ document.getElementById("lastResult").textContent="-";
+
+ // 🔥 รีเซ็ตกล่อง AI 7 ชั้น
+document.getElementById("aiUltraBox").innerHTML = ""
+document.getElementById("aiUltraHistory").innerHTML = ""
+
+ renderAI(null,null,null,null,null,null,"-",0)
+}
+
+
+
+function checkAIPredict(result){
+
+if(result==="T") return
+
+["A","B","C","D","E","F",
+"L1","L2","L3","L4","L5","L6","L7","L8","L9","L10",
+"L11","L12","L13","L14","L15"].forEach(line=>{
+
+let pred = aiStats[line].last
+if(!pred) return
+
+aiStats[line].total++
+
+let win = pred==result
+
+if(win){
+  aiStats[line].win++
+  aiHistory[line].push(1)
+}else{
+  aiStats[line].lose++
+  aiHistory[line].push(0)
+}
+
+})
+
+renderHistory() // ✅ ใส่บรรทัดนี้
+}
+
+
+function replayAll(){
+
+isReplay = true
+
+// reset
+Object.keys(aiStats).forEach(k=>{
+  aiStats[k]={win:0,lose:0,total:0,last:null}
+  aiHistory[k]=[]
+})
+
+aiUltraHistory.length = 0
+
+let temp = [...results]
+results.length = 0
+ultraStats.win = 0
+ultraStats.lose = 0
+
+temp.forEach(r=>{
+
+  // 1. ใส่ผล
+  results.push(r)
+
+  // 2. วิเคราะห์ก่อน (สำคัญ)
+  analyzeAI()
+
+  // 3. ใช้ตัวเดียวกับหน้าจอ
+  let prevFinal = lastUltraBet
+
+  if(r !== "T" && prevFinal){
+
+    // AI ปกติ
+    Object.keys(aiStats).forEach(line=>{
+      let pred = aiStats[line].last
+      if(!pred) return
+
+      aiStats[line].total++
+
+      if(pred === r){
+        aiStats[line].win++
+        aiHistory[line].push(1)
+      }else{
+        aiStats[line].lose++
+        aiHistory[line].push(0)
+      }
+    })
+
+    // ✅ Ultra (เหมือน addResult)
+    let isWin = prevFinal === r
+
+    if(isWin) ultraStats.win++
+    else ultraStats.lose++
+
+    aiUltraHistory.push(isWin ? 1 : 0)
+  }
+
+})
+
+isReplay = false
+
+drawBead()
+updateStats()
+renderHistory()
+renderUltraAI()
+}
+
+undo = function(){
+
+if(results.length === 0) return
+
+// ลบ 1 ตัว
+results.pop()
+
+// ✅ ไม่ต้อง reset อะไรเอง
+// replayAll จะจัดการ state ทั้งหมดให้
+replayAll()
+
+}
+
+
+/* =========================
+RENDER HISTORY
+========================= */
+
+function renderHistory(){
+
+[
+"A","B","C","D","E","F",
+"L1","L2","L3","L4","L5","L6","L7","L8","L9","L10",
+"L11","L12","L13","L14","L15"
+].forEach(line=>{
+
+let el = document.getElementById("hist"+line)
+let label = document.getElementById("label"+line)
+
+// ✅ กัน element ไม่มี (สำคัญมาก)
+if(!el || !label) return
+
+let stat = aiStats[line]
+
+// ✅ กัน undefined (เผื่อ edge case)
+if(!stat) return
+
+let acc = stat.total
+ ? Math.round(stat.win / stat.total * 100)
+ : 0
+
+/* เปลี่ยนสี PLAYER / BANKER */
+
+let bet = stat.last=="B"
+ ? "<span class='signalB'>BANKER</span>"
+ : stat.last=="P"
+ ? "<span class='signalP'>PLAYER</span>"
+ : "-"
+
+/* blink เมื่อแม่น */
+
+let cls = acc >= 60 ? "blinkHigh" : ""
+
+/* แสดง label */
+
+label.innerHTML =
+line+" → "+bet+" <span class='"+cls+"'>"+acc+"%</span>"
+
+el.innerHTML=""
+
+/* วาด history */
+
+aiHistory[line].forEach(v=>{
+
+let box = document.createElement("div")
+
+box.className = "histBox " + (v ? "win" : "lose")
+box.textContent = v ? "✔" : "✖"
+
+el.appendChild(box)
+
+})
+
+/* scroll ไปขวาสุด */
+
+el.scrollLeft = el.scrollWidth
+
+})
+
+}
+/* =========================
+AI DISPLAY
+========================= */
+
+function renderAI(
+ lineA,lineB,lineC,lineD,lineE,lineF,
+ bet,confidence,
+ L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12,L13,L14,L15
+){
+
+function txt(v){
+ if(v=="B") return "<span class='signalB'>BANKER</span>"
+ if(v=="P") return "<span class='signalP'>PLAYER</span>"
+ return "-"
+}
+
+/* =========================
+(OPTION) ถ้ายังมี DOM อยู่ → ค่อย render
+========================= */
+
+function setSafe(id, val){
+ let el = document.getElementById(id)
+ if(!el) return
+ el.innerHTML = id.replace("line","") + " → " + txt(val)
+}
+
+/* A–F */
+setSafe("lineA",lineA)
+setSafe("lineB",lineB)
+setSafe("lineC",lineC)
+setSafe("lineD",lineD)
+setSafe("lineE",lineE)
+setSafe("lineF",lineF)
+
+/* L1–L15 */
+setSafe("lineL1",L1)
+setSafe("lineL2",L2)
+setSafe("lineL3",L3)
+setSafe("lineL4",L4)
+setSafe("lineL5",L5)
+setSafe("lineL6",L6)
+setSafe("lineL7",L7)
+setSafe("lineL8",L8)
+setSafe("lineL9",L9)
+setSafe("lineL10",L10)
+setSafe("lineL11",L11)
+setSafe("lineL12",L12)
+setSafe("lineL13",L13)
+setSafe("lineL14",L14)
+setSafe("lineL15",L15)
+
+/* =========================
+FINAL (ตัวจริงที่แสดง)
+========================= */
+
+let glow = confidence >= 60 ? "blinkHigh" : ""
+
+let finalEl = document.getElementById("finalBet")
+let confEl = document.getElementById("confidence")
+
+if(finalEl){
+ finalEl.innerHTML =
+ "<span class='"+glow+"'>🔥 แทง: "+txt(bet)+"</span>"
+}
+
+if(confEl){
+ confEl.innerHTML = "Confidence "+confidence+"%"
+}
+
+}
+
+
+function analyzeAI(){
+
+if(results.length < 3){
+
+  if(!isReplay){
+    renderAI(null,null,null,null,null,null,"-",0)
+  }
+
+  return
+}
+
+/* กรอง T ออก */
+let clean = results.filter(x=>x!=="T")
+let last = clean.slice(-3)
+
+if(last.length < 3){
+  return
+}
+
+/* นับ */
+let B = last.filter(x=>x=="B").length
+let P = last.filter(x=>x=="P").length
+
+let trend = B>P ? "B" : "P"
+
+/* chop */
+let chop=0
+for(let i=1;i<last.length;i++){
+  if(last[i]!=last[i-1]) chop++
+}
+let chopRate = chop/(last.length-1)
+
+/* run */
+let run=1, maxRun=1
+for(let i=1;i<last.length;i++){
+  if(last[i]==last[i-1]) run++
+  else run=1
+  if(run>maxRun) maxRun=run
+}
+
+/* ===== MAIN LINES ===== */
+
+let lineA = trend
+let lineB = chopRate>0.6 ? trend : (trend=="B"?"P":"B")
+let lineC = B>P ? "P":"B"
+
+let lineD = maxRun>=3 ? (trend=="B"?"P":"B") : trend
+
+let prev = clean.slice(-4)
+let lineE = trend
+if(prev.length>=4){
+  if(prev[0]==prev[2] && prev[1]==prev[3]){
+    lineE = prev[0]
+  }
+}
+
+let weightB = B*1.2
+let weightP = P*1.2
+if(maxRun>=2){
+  if(trend=="B") weightB+=1
+  else weightP+=1
+}
+let lineF = weightB>weightP ? "B":"P"
+
+/* ===== L1–L15 ===== */
+
+let L1 = (last[1]==last[2]) ? (last[2]=="B"?"P":"B") : trend
+let L2 = maxRun>=2 ? (trend=="B"?"P":"B") : trend
+
+let hist = clean
+let L3 = hist.length>=4 ? hist[hist.length-4] : trend
+
+let L4 = chopRate>0.5 ? (last[2]=="B"?"P":"B") : last[2]
+let L5 = (last[0]==last[2]) ? (last[2]=="B"?"P":"B") : trend
+let L6 = last[2]
+let L7 = last[2]=="B"?"P":"B"
+let L8 = last[2]
+
+let long = clean.slice(-10)
+let cB = long.filter(x=>x=="B").length
+let cP = long.filter(x=>x=="P").length
+let L9 = cB>cP?"B":"P"
+
+let L10 = chopRate>0.7 ? last[0] : trend
+let L11 = chopRate<0.3 ? trend : (trend=="B"?"P":"B")
+
+let L12 = (B==P) ? (last[2]=="B"?"P":"B") : trend
+
+let diff = Math.abs(B-P)
+let L13 = diff>=2 ? trend : (trend=="B"?"P":"B")
+
+let L14 = maxRun>=3 ? (trend=="B"?"P":"B") : trend
+
+let pool = [L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12,L13,L14]
+let cBB = pool.filter(x=>x=="B").length
+let cPP = pool.filter(x=>x=="P").length
+let L15 = cBB>cPP?"B":"P"
+
+/* ===== CONFIDENCE ===== */
+
+let scoreB=0, scoreP=0
+let lines=[lineA,lineB,lineC,lineD,lineE,lineF,L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12,L13,L14,L15]
+
+lines.forEach(v=>{
+  if(v=="B") scoreB++
+  if(v=="P") scoreP++
+})
+
+let bet = scoreB>scoreP?"B":"P"
+let confidence = Math.round(Math.max(scoreB,scoreP)/lines.length*100)
+
+/* ===== SAVE ===== */
+
+aiStats.A.last=lineA
+aiStats.B.last=lineB
+aiStats.C.last=lineC
+aiStats.D.last=lineD
+aiStats.E.last=lineE
+aiStats.F.last=lineF
+
+aiStats.L1.last=L1
+aiStats.L2.last=L2
+aiStats.L3.last=L3
+aiStats.L4.last=L4
+aiStats.L5.last=L5
+aiStats.L6.last=L6
+aiStats.L7.last=L7
+aiStats.L8.last=L8
+aiStats.L9.last=L9
+aiStats.L10.last=L10
+aiStats.L11.last=L11
+aiStats.L12.last=L12
+aiStats.L13.last=L13
+aiStats.L14.last=L14
+aiStats.L15.last=L15
+
+/* ===== RENDER ===== */
+
+if(!isReplay){
+  renderAI(
+ lineA,lineB,lineC,lineD,lineE,lineF,
+ bet,confidence,
+ L1,L2,L3,L4,L5,L6,L7,L8,L9,L10,L11,L12,L13,L14,L15
+)
+  drawBead()
+  updateStats()
+  renderHistory()
+    renderUltraAI() // 🔥 ใช้ตัวนี้แทน
+}
+}
+
+function renderUltraAI(){
+
+let box = document.getElementById("aiUltraBox")
+let histBox = document.getElementById("aiUltraHistory")
+
+if(!box || !histBox) return
+
+let lines = Object.keys(aiStats)
+
+/* ===== จัดอันดับ ===== */
+let ranked = lines.map(l=>{
+ let s = aiStats[l]
+ let acc = s.total ? s.win/s.total : 0
+ return {line:l, acc}
+})
+
+ranked.sort((a,b)=>b.acc-a.acc)
+let top15 = ranked.slice(0,15)
+
+/* ===== 7 ชั้น ===== */
+let scoreB = 0
+let scoreP = 0
+
+let reason = []
+
+top15.forEach((item,i)=>{
+
+ let stat = aiStats[item.line]
+ let pred = stat.last
+ if(!pred) return
+
+ let weight = 1
+
+ if(i < 3){ weight = 3; reason.push("Top3 แม่นสูง") }
+ else if(i < 7){ weight = 2; reason.push("Mid กลาง") }
+ else weight = 1
+
+ if(stat.total > 10){
+  weight += 1
+  reason.push("ข้อมูลเยอะ")
+ }
+
+ if(stat.total && stat.win/stat.total >= 0.6){
+  weight += 1
+  reason.push("WinRate สูง")
+ }
+
+ if(pred=="B") scoreB += weight
+ if(pred=="P") scoreP += weight
+
+})
+/* ===== สรุป ===== */
+let final = scoreB > scoreP ? "B" : "P"
+
+
+lastUltraBet = final // ✅ เก็บค่าที่แสดงจริง
+
+let total = ultraStats.win + ultraStats.lose
+
+let confidence = total
+ ? Math.round((ultraStats.win / total) * 100)
+ : 0
+
+/* ===== จำกัด 50 ช่อง */
+if(aiUltraHistory.length > 50){
+ aiUltraHistory.shift()
+}
+
+/* ===== render กล่องหลัก ===== */
+
+let color = final=="B" ? "smartB" : "smartP"
+
+box.innerHTML = `
+<div>🔥 AI 7 ชั้น</div>
+<div class="${color}" style="font-size:22px;">
+ ${final=="B"?"BANKER":"PLAYER"}
+</div>
+<div>Confidence ${confidence}%</div>
+
+<div class="reason">
+เหตุผล:<br>
+${[...new Set(reason)].slice(0,4).join(" • ")}
+</div>
+`
+
+/* ===== render ✔✖ ===== */
+
+histBox.innerHTML = ""
+
+aiUltraHistory.forEach(v=>{
+ let d = document.createElement("div")
+ d.className = "ultraItem " + (v ? "ultraWin":"ultraLose")
+ d.textContent = v ? "✔" : "✖"
+ histBox.appendChild(d)
+})
+
+}
+/* =========================
+LOGIN SYSTEM
+========================= */
+
+
+
+function login(){
+
+const user = document.getElementById("user").value
+const pass = document.getElementById("pass").value
+
+const USERNAME = "1234"
+const PASSWORD = "1234"
+
+if(user === USERNAME && pass === PASSWORD){
+
+document.getElementById("loginPage").style.display = "none"
+document.querySelector(".container").style.display = "block"
+
+}else{
+
+alert("Login ไม่ถูกต้อง")
+
+document.getElementById("user").value=""
+document.getElementById("pass").value=""
+document.getElementById("user").focus()
+
+}
+
+}
+
+/* =========================
+SHOW / HIDE PASSWORD
+========================= */
+
+function togglePass(){
+
+const pass = document.getElementById("pass")
+
+if(pass.type === "password"){
+pass.type = "text"
+}else{
+pass.type = "password"
+}
+
+}
+
+/* =========================
+ENTER KEY LOGIN
+========================= */
+
+document.getElementById("pass").addEventListener("keypress", function(e){
+
+if(e.key === "Enter"){
+login()
+}
+
+})
+
+</script>
+
+</body>
+</html>
